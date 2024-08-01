@@ -27,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62091778462753019}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.8077226, y: 0.31499, z: 0.08299464}
-  m_LocalScale: {x: 1, y: 0.1375, z: 1}
+  m_LocalScale: {x: 1, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -2111946636, guid: 87794f81298e8d3498fc7aefbfac2ab9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130,10 +130,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.5, y: 0.5}
+    - - {x: -0.50476, y: -0.06406598}
       - {x: -0.5, y: -0.5}
       - {x: 0.5, y: -0.5}
-      - {x: 0.5, y: 0.5}
+      - {x: 0.5026386, y: -0.06627071}
   m_UseDelaunayMesh: 0
 --- !u!114 &3312521303746756119
 MonoBehaviour:

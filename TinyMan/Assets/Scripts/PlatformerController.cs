@@ -11,20 +11,29 @@ public class PlatformerController : MonoBehaviour
     public float detectionRange = 2f; // Range for detecting characters in front
     public bool bCanMove = true;
     private Rigidbody2D rb;
+    private Collider2D cd;
+    private Animator animator;
     public bool CharacterInFront = false;
-    private bool isGrounded;
+    public bool isGrounded;
     public Vector2 direction;
+    public LayerMask ExcOnGround;
+    public LayerMask ExcInAir;
+    public bool IsPerforming = false;
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        cd = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>(); // Get the Animator component
     }
 
     void Update()
     {
         HandleInput();
         LookAhead();
-        if(bCanMove) Move();
+        UpdateAnimator(); // Update animator based on current states
+
+        if (bCanMove) Move();
     }
 
     void LookAhead()
@@ -32,9 +41,9 @@ public class PlatformerController : MonoBehaviour
         // Raycast in the direction the character is facing
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, detectionRange);
 
-        if (hit.collider != null && hit.collider.CompareTag("Character") && hit.collider.gameObject != this.gameObject)
+        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle"))
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
+            
             bCanMove = false;
             CharacterInFront = true;
         }
@@ -47,7 +56,11 @@ public class PlatformerController : MonoBehaviour
 
     void HandleInput()
     {
- 
+        // Example input handling
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            Jump();
+        }
     }
 
     void Move()
@@ -60,6 +73,7 @@ public class PlatformerController : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
         rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         isGrounded = false;
+        animator.SetTrigger("JumpTrig"); 
     }
 
     public void JumpWithForce(float jumpHeight)
@@ -67,6 +81,8 @@ public class PlatformerController : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
         rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         isGrounded = false;
+        animator.SetTrigger("JumpTrig"); 
+
     }
 
     public void Stop()
@@ -78,19 +94,29 @@ public class PlatformerController : MonoBehaviour
     public void ChangeDirection(Vector2 newDirection)
     {
         direction = newDirection;
-        transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1); // Flip character sprite
+        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
     }
 
     public void RotateDirection()
     {
-        direction.x -= direction.x;
+        direction.x *= -1;
+        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
     }
     
     public void RotateDirectionAndJump(float jumpHeight)
     {
         direction.x *= -1;
+        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
         Debug.Log(direction.x.ToString());
         JumpWithForce(jumpHeight);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (IsPerforming)
+        {
+            Debug.Log("STUCK");
+        }
     }
     
     private void OnCollisionEnter2D(Collision2D collision)
@@ -101,6 +127,7 @@ public class PlatformerController : MonoBehaviour
             if (Vector2.Dot(contact.normal, Vector2.up) > 0.5f)
             {
                 isGrounded = true;
+
             }
         }
 
@@ -109,6 +136,7 @@ public class PlatformerController : MonoBehaviour
             var Entity = collision.gameObject.GetComponent<ObstacleEntity>();
             if(Entity)
             {
+                IsPerforming = true;
                 Entity.PerformObstacleAction(this);
             }
             else
@@ -131,7 +159,22 @@ public class PlatformerController : MonoBehaviour
             if (Vector2.Dot(contact.normal, Vector2.up) > 0.5f)
             {
                 isGrounded = false;
+                Debug.Log("Not Grounded");
             }
+        }
+
+        if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
+        {
+            IsPerforming = false;
+        }
+    }
+
+    void UpdateAnimator()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("Jump", !isGrounded); // Set Jump to true if not grounded
+            animator.SetBool("IsRunning", isGrounded); // Set Running based on movement
         }
     }
 }

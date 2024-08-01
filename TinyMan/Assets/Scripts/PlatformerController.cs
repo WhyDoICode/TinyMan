@@ -173,6 +173,16 @@ public class PlatformerController : MonoBehaviour
     {
         if (animator != null)
         {
+            if (!isGrounded)
+            {
+                if (rb != null) rb.excludeLayers = ExcInAir;
+                if (cd != null) cd.excludeLayers = ExcInAir;
+            }
+            else
+            {
+                if (rb != null) rb.excludeLayers = ExcOnGround;
+                if (cd != null) cd.excludeLayers = ExcOnGround;
+            }
             animator.SetBool("Jump", !isGrounded); // Set Jump to true if not grounded
             animator.SetBool("IsRunning", isGrounded); // Set Running based on movement
         }

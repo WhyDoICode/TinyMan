@@ -113,9 +113,15 @@ public class PlatformerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (IsPerforming)
+        if (!IsPerforming)
         {
             Debug.Log("STUCK");
+            var Entity = collision.gameObject.GetComponent<ObstacleEntity>();
+            if(Entity)
+            {
+                IsPerforming = true;
+                Entity.PerformObstacleAction(this);
+            }
         }
     }
     

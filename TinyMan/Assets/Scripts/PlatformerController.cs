@@ -41,7 +41,7 @@ public class PlatformerController : MonoBehaviour
         // Raycast in the direction the character is facing
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, detectionRange);
 
-        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle"))
+        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle") &&  !hit.collider.gameObject.CompareTag("Kill"))
         {
             
             bCanMove = false;

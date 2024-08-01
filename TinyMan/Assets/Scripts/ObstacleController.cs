@@ -41,6 +41,8 @@ public class ObstacleController : MonoBehaviour
         }
     }
 
+
+    
     private IEnumerator ScaleAnimation(GameObject target)
     {
         Vector3 originalScale = target.transform.localScale;

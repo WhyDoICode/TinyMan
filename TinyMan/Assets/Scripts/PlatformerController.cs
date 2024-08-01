@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
@@ -36,6 +37,11 @@ public class PlatformerController : MonoBehaviour
         if (bCanMove) Move();
     }
 
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.ReduceCharacter();
+    }
+
     void LookAhead()
     {
         // Raycast in the direction the character is facing
@@ -43,7 +49,6 @@ public class PlatformerController : MonoBehaviour
 
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle") &&  !hit.collider.gameObject.CompareTag("Kill"))
         {
-            
             bCanMove = false;
             CharacterInFront = true;
         }

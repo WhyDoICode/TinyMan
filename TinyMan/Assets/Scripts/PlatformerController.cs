@@ -62,10 +62,6 @@ public class PlatformerController : MonoBehaviour
     void HandleInput()
     {
         // Example input handling
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            Jump();
-        }
     }
 
     void Move()
@@ -99,19 +95,22 @@ public class PlatformerController : MonoBehaviour
     public void ChangeDirection(Vector2 newDirection)
     {
         direction = newDirection;
-        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
+        float mainDir = 0.6f * direction.x;
+        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
 
     public void RotateDirection()
     {
         direction.x *= -1;
-        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
+        float mainDir = 0.6f * direction.x;
+        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
     
     public void RotateDirectionAndJump(float jumpHeight)
     {
         direction.x *= -1;
-        this.gameObject.transform.localScale = new Vector3(Mathf.Sign(direction.x), 1, 1);
+        float mainDir = 0.6f * direction.x;
+        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
         Debug.Log(direction.x.ToString());
         JumpWithForce(jumpHeight);
     }

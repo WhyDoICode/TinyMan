@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,19 +22,31 @@ public class GameManager : MonoBehaviour
     // Character management
     public int TotalCharacters;
     public int LimitToWin;
+    public int charactersInWinVolume = 0; // Characters currently in the win volume
 
     // UI Elements
     public RectTransform loseRectTransform; // UI element for losing
+    public RectTransform winRectTransform; // UI element for winning
     public TextMeshProUGUI characterCountText; // UI text to display total characters
+    public TextMeshProUGUI limitText; // UI text to display total characters
     public float fadeDuration = 1f; // Duration for fade-in and fade-out
 
     public Spawner[] spawners; // Array of spawners
 
-    private bool IsRespawning = false;
+    private bool isRespawning = false;
+
+    private void FixedUpdate()
+    {
+        if (charactersInWinVolume >= LimitToWin)
+        {
+            WinGame();
+        }
+    }
+
     // Method to call CreateEntity on each spawner
     public void Respawn()
     {
-        IsRespawning = true;
+        isRespawning = true;
         foreach (Spawner spawner in spawners)
         {
             if (spawner != null)
@@ -41,7 +54,9 @@ public class GameManager : MonoBehaviour
                 spawner.CreateEntity();
             }
         }
+        StartCoroutine(RespawnEnd(1f)); // Simulate end of respawning
     }
+
     private void Awake()
     {
         // Implement the singleton pattern
@@ -58,9 +73,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        limitText.text = LimitToWin.ToString();
         Respawn();
         UpdateCharacterCountText(); // Initialize the character count display
         SetAlpha(loseRectTransform, 0f); // Initially hide the lose UI
+        winRectTransform.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -78,21 +95,11 @@ public class GameManager : MonoBehaviour
         if (currentState != GameState.Playing) return; // Only transition if currently playing
         currentState = GameState.Won;
         Debug.Log("You win!");
-        StartCoroutine(RestartAfterDelay(0.3f)); // Restart the game after a short delay
+        // Show win UI
+        StartCoroutine(FadeWinUI());
     }
 
-    // Call this method to declare the player has lost
-    public void LoseGame()
-    {
-        if (currentState != GameState.Playing) return; // Only transition if currently playing
-        currentState = GameState.Lost;
-        Debug.Log("You lose!");
-
-        // Start the fade-in and fade-out process
-        StartCoroutine(FadeLoseUI());
-    }
-    bool restarting;
-
+    private bool restarting;
     // Method to restart the current game/scene
     private void RestartGame()
     {
@@ -114,9 +121,8 @@ public class GameManager : MonoBehaviour
     private IEnumerator RespawnEnd(float delay)
     {
         yield return new WaitForSeconds(delay);
-        IsRespawning = false;
+        isRespawning = false;
     }
-
 
     // Reduce character count and check for losing condition
     public void ReduceCharacter()
@@ -135,8 +141,22 @@ public class GameManager : MonoBehaviour
     {
         if (characterCountText != null)
         {
-            characterCountText.text = "Characters Left: " + TotalCharacters;
+            characterCountText.text =  TotalCharacters.ToString();
         }
+    }
+
+    // Coroutine to handle the fade-in effect for winning
+    private IEnumerator FadeWinUI()
+    {
+        SetAlpha(winRectTransform, 1f); // Hide initially
+        winRectTransform.gameObject.SetActive(true);
+
+
+        // Pause for 3 seconds
+        yield return new WaitForSeconds(5f);
+
+        // Restart the game
+        RestartGame();
     }
 
     // Coroutine to handle the fade-in and fade-out effect

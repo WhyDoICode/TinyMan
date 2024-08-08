@@ -37,14 +37,28 @@ public class PlatformerController : MonoBehaviour
     // Layer Masks
     [Header("Layer Masks")]
     [SerializeField]
+    private LayerMask groundLayer;
+
+    [SerializeField]
     private LayerMask excOnGround;
 
     [SerializeField]
     private LayerMask excInAir;
 
+    // Ground Detection
+    [Header("Ground Detection")]
+    [SerializeField, Range(0.1f, 0.5f)]
+    private float groundCheckDistance = 0.1f;
+
+    [SerializeField, Range(0.01f, 0.5f)]
+    private float groundCheckWidth = 0.01f;
+
     // Components
+    [SerializeField]
     private Rigidbody2D rb;
+    [SerializeField]
     private Collider2D collider;
+    [SerializeField]
     private Animator animator;
 
     // Properties
@@ -61,9 +75,7 @@ public class PlatformerController : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        collider = GetComponent<Collider2D>();
-        animator = GetComponent<Animator>();
+
     }
 
     private void Update()
@@ -71,8 +83,34 @@ public class PlatformerController : MonoBehaviour
         HandleInput();
         LookAhead();
         UpdateAnimator();
+        CheckGround();
 
         if (canMove) Move();
+    }
+
+    private void CheckGround()
+    {
+        // Cast a short ray downwards from the center of the collider to detect ground
+        Vector2 origin = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y);
+        RaycastHit2D hitCenter = Physics2D.Raycast(origin, Vector2.down, groundCheckDistance, groundLayer);
+
+        // Cast two additional rays at the left and right edges of the collider
+        Vector2 leftOrigin = origin + Vector2.left * (collider.bounds.extents.x - groundCheckWidth);
+        Vector2 rightOrigin = origin + Vector2.right * (collider.bounds.extents.x - groundCheckWidth);
+
+        RaycastHit2D hitLeft = Physics2D.Raycast(leftOrigin, Vector2.down, groundCheckDistance, groundLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(rightOrigin, Vector2.down, groundCheckDistance, groundLayer);
+
+        isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
+
+        if (isGrounded)
+        {
+            canMove = true;
+        }
+
+        Debug.DrawRay(origin, Vector2.down * groundCheckDistance, Color.red);
+        Debug.DrawRay(leftOrigin, Vector2.down * groundCheckDistance, Color.red);
+        Debug.DrawRay(rightOrigin, Vector2.down * groundCheckDistance, Color.red);
     }
 
     private void OnDestroy()
@@ -112,18 +150,18 @@ public class PlatformerController : MonoBehaviour
 
     private void Jump()
     {
-        float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
-        rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-        isGrounded = false;
-        animator.SetTrigger("JumpTrig");
+            float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
+            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
+            isGrounded = false;
+            animator.SetTrigger("JumpTrig");
     }
 
     public void JumpWithForce(float jumpHeight)
     {
-        float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
-        rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-        isGrounded = false;
-        animator.SetTrigger("JumpTrig");
+            float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
+            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
+            isGrounded = false;
+            animator.SetTrigger("JumpTrig");
     }
 
     public void Stop()
@@ -148,10 +186,7 @@ public class PlatformerController : MonoBehaviour
 
     public void RotateDirectionAndJump(float jumpHeight)
     {
-        direction.x *= -1;
-        float mainDir = 0.6f * direction.x;
-        transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
-        Debug.Log(direction.x.ToString());
+        RotateDirection();
         JumpWithForce(jumpHeight);
     }
 
@@ -159,7 +194,6 @@ public class PlatformerController : MonoBehaviour
     {
         if (!isPerforming)
         {
-            Debug.Log("STUCK");
             var entity = collision.gameObject.GetComponent<ObstacleEntity>();
             if (entity != null)
             {
@@ -171,15 +205,6 @@ public class PlatformerController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.contacts.Length > 0)
-        {
-            ContactPoint2D contact = collision.contacts[0];
-            if (Vector2.Dot(contact.normal, Vector2.up) > 0.5f)
-            {
-                isGrounded = true;
-            }
-        }
-
         if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
         {
             var entity = collision.gameObject.GetComponent<ObstacleEntity>();
@@ -200,17 +225,6 @@ public class PlatformerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.contacts.Length > 0)
-        {
-            ContactPoint2D contact = collision.contacts[0];
-
-            if (Vector2.Dot(contact.normal, Vector2.up) > 0.5f)
-            {
-                isGrounded = false;
-                Debug.Log("Not Grounded");
-            }
-        }
-
         if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
         {
             isPerforming = false;
@@ -221,16 +235,6 @@ public class PlatformerController : MonoBehaviour
     {
         if (animator != null)
         {
-            if (!isGrounded)
-            {
-                if (rb != null) rb.excludeLayers = excInAir;
-                if (collider != null) collider.excludeLayers = excInAir;
-            }
-            else
-            {
-                if (rb != null) rb.excludeLayers = excOnGround;
-                if (collider != null) collider.excludeLayers = excOnGround;
-            }
             animator.SetBool("Jump", !isGrounded); // Set Jump to true if not grounded
             animator.SetBool("IsRunning", isGrounded); // Set Running based on movement
         }

@@ -3,52 +3,75 @@ using UnityEngine;
 
 public class ObstacleController : MonoBehaviour
 {
+    // Animation Settings
+    [Header("Animation Settings")]
+    [SerializeField, Range(0.1f, 1f)]
+    private float animationDuration = 0.2f;
+
+    [SerializeField]
+    private Vector3 scaleUpSize = new Vector3(1.2f, 1.2f, 1.2f);
+
+    // Interaction
     private Vector3 offset;
-    public GameObject mySprite;
-    public float animationDuration = 0.2f;
-    public Vector3 scaleUpSize = new Vector3(1.2f, 1.2f, 1.2f);
+    private GameObject selectedSprite;
 
-    // Update is called once per frame
-    void Update()
+    // Properties
+    public float AnimationDuration => animationDuration;
+    public Vector3 ScaleUpSize => scaleUpSize;
+
+    private void Update()
     {
-        // Check if the left mouse button is pressed
-        if (Input.GetMouseButtonDown(0))
+        HandleMouseInput();
+        if (selectedSprite != null)
         {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
-
-            // Check if the raycast hit this sprite
-            if (hit.collider != null && hit.collider.gameObject.CompareTag("Obstacle"))
-            {
-                mySprite = hit.collider.gameObject;
-                offset = mySprite.transform.position - mousePosition;
-
-                // Start the scale animation
-                StartCoroutine(ScaleAnimation(mySprite));
-            }
-        }
-
-        // Check if the left mouse button is released
-        if (Input.GetMouseButtonUp(0))
-        {
-            mySprite = null;
-        }
-
-        if (mySprite)
-        {
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mySprite.transform.position = mousePosition + offset;
+            MoveSelectedSprite();
         }
     }
 
+    private void HandleMouseInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            SelectSpriteUnderMouse();
+        }
 
-    
+        if (Input.GetMouseButtonUp(0))
+        {
+            DeselectSprite();
+        }
+    }
+
+    private void SelectSpriteUnderMouse()
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+
+        if (hit.collider != null && hit.collider.gameObject.CompareTag("Obstacle"))
+        {
+            selectedSprite = hit.collider.gameObject;
+            offset = selectedSprite.transform.position - mousePosition;
+
+            StartCoroutine(ScaleAnimation(selectedSprite));
+        }
+    }
+
+    private void DeselectSprite()
+    {
+        selectedSprite = null;
+    }
+
+    private void MoveSelectedSprite()
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        selectedSprite.transform.position = mousePosition + offset;
+    }
+
     private IEnumerator ScaleAnimation(GameObject target)
     {
         Vector3 originalScale = target.transform.localScale;
 
         // Scale up
-        float elapsedTime = 0;
+        float elapsedTime = 0f;
         while (elapsedTime < animationDuration / 2)
         {
             target.transform.localScale = Vector3.Lerp(originalScale, scaleUpSize, elapsedTime / (animationDuration / 2));
@@ -58,7 +81,7 @@ public class ObstacleController : MonoBehaviour
         target.transform.localScale = scaleUpSize;
 
         // Scale down
-        elapsedTime = 0;
+        elapsedTime = 0f;
         while (elapsedTime < animationDuration / 2)
         {
             target.transform.localScale = Vector3.Lerp(scaleUpSize, originalScale, elapsedTime / (animationDuration / 2));

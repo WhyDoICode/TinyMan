@@ -1,32 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    public GameObject spawnItem; // Prefab to spawn
-    public Transform spawnLocation; // Location to spawn the item
+    public GameObject SpawnItemPrefab; 
+    private Transform SpawnLocation; 
 
-    public GameObject Current;
-    // Start is called before the first frame update
-    void Start()
+    private GameObject CurrentSpawnedItem { get; set; }
+
+    private void Awake()
     {
+        SpawnLocation = transform;
     }
 
     public void CreateEntity()
     {
-        if(Current) Destroy(Current);
-        
-        spawnLocation = this.gameObject.transform;
-        // Check if the spawnItem and spawnLocation are assigned
-        if (spawnItem != null && spawnLocation != null)
+        DestroyCurrentItem();
+
+        if (SpawnItemPrefab != null && SpawnLocation != null)
         {
-            // Instantiate the item at the specified location and rotation
-            Current = Instantiate(spawnItem, spawnLocation.position, spawnLocation.rotation);
+            CurrentSpawnedItem = Instantiate(SpawnItemPrefab, SpawnLocation.position, SpawnLocation.rotation);
         }
         else
         {
-            Debug.LogWarning("SpawnItem or SpawnLocation is not assigned.");
+            Debug.LogWarning("SpawnItemPrefab or SpawnLocation is not assigned.");
         }
+    }
+
+    private void DestroyCurrentItem()
+    {
+        if (!CurrentSpawnedItem) return;
+        Destroy(CurrentSpawnedItem);
     }
 }

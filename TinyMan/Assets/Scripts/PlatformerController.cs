@@ -3,78 +3,119 @@ using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
 {
-    // Movement settings
-    public float moveSpeed = 5f;
-    public float jumpForce = 10f;
-    public float maxJumpHeight = 4f;
-    public float minJumpHeight = 1f;
-    
-    public float detectionRange = 2f; // Range for detecting characters in front
-    public bool bCanMove = true;
-    private Rigidbody2D rb;
-    private Collider2D cd;
-    private Animator animator;
-    public bool CharacterInFront = false;
-    public bool isGrounded;
-    public Vector2 direction;
-    public LayerMask ExcOnGround;
-    public LayerMask ExcInAir;
-    public bool IsPerforming = false;
+    // Movement Settings
+    [Header("Movement Settings")]
+    [SerializeField, Range(1f, 10f)]
+    private float moveSpeed = 5f;
 
-    void Awake()
+    [SerializeField, Range(1f, 20f)]
+    private float jumpForce = 10f;
+
+    [SerializeField, Range(1f, 10f)]
+    private float maxJumpHeight = 4f;
+
+    [SerializeField, Range(0.5f, 5f)]
+    private float minJumpHeight = 1f;
+
+    [SerializeField, Range(0.1f, 5f)]
+    private float detectionRange = 2f;
+
+    // Character State
+    [Header("Character State")]
+    [SerializeField]
+    private bool canMove = true;
+
+    private bool characterInFront = false;
+    private bool isGrounded;
+    private bool isPerforming = false;
+
+    // Direction
+    [Header("Direction")]
+    [SerializeField]
+    private Vector2 direction;
+
+    // Layer Masks
+    [Header("Layer Masks")]
+    [SerializeField]
+    private LayerMask excOnGround;
+
+    [SerializeField]
+    private LayerMask excInAir;
+
+    // Components
+    private Rigidbody2D rb;
+    private Collider2D collider;
+    private Animator animator;
+
+    // Properties
+    public float MoveSpeed => moveSpeed;
+    public float JumpForce => jumpForce;
+    public float MaxJumpHeight => maxJumpHeight;
+    public float MinJumpHeight => minJumpHeight;
+    public float DetectionRange => detectionRange;
+    public bool CanMove => canMove;
+    public bool CharacterInFront => characterInFront;
+    public bool IsGrounded => isGrounded;
+    public Vector2 Direction => direction;
+    public bool IsPerforming => isPerforming;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        cd = GetComponent<Collider2D>();
-        animator = GetComponent<Animator>(); // Get the Animator component
+        collider = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
         HandleInput();
         LookAhead();
-        UpdateAnimator(); // Update animator based on current states
+        UpdateAnimator();
 
-        if (bCanMove) Move();
+        if (canMove) Move();
     }
 
     private void OnDestroy()
     {
-        if (GameManager.Instance != null) GameManager.Instance.ReduceCharacter();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ReduceCharacterCount();
+        }
     }
 
-    void LookAhead()
+    private void LookAhead()
     {
         // Raycast in the direction the character is facing
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, detectionRange);
 
-        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle") &&  !hit.collider.gameObject.CompareTag("Kill"))
+        if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle") && !hit.collider.gameObject.CompareTag("Kill"))
         {
-            bCanMove = false;
-            CharacterInFront = true;
+            canMove = false;
+            characterInFront = true;
         }
         else
         {
-            bCanMove = true;
-            CharacterInFront = false;
+            canMove = true;
+            characterInFront = false;
         }
     }
 
-    void HandleInput()
+    private void HandleInput()
     {
         // Example input handling
     }
 
-    void Move()
+    private void Move()
     {
         rb.velocity = new Vector2(direction.x * moveSpeed, rb.velocity.y);
     }
 
-    void Jump()
+    private void Jump()
     {
         float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
         rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         isGrounded = false;
-        animator.SetTrigger("JumpTrig"); 
+        animator.SetTrigger("JumpTrig");
     }
 
     public void JumpWithForce(float jumpHeight)
@@ -82,8 +123,7 @@ public class PlatformerController : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
         rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
         isGrounded = false;
-        animator.SetTrigger("JumpTrig"); 
-
+        animator.SetTrigger("JumpTrig");
     }
 
     public void Stop()
@@ -96,39 +136,39 @@ public class PlatformerController : MonoBehaviour
     {
         direction = newDirection;
         float mainDir = 0.6f * direction.x;
-        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
+        transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
 
     public void RotateDirection()
     {
         direction.x *= -1;
         float mainDir = 0.6f * direction.x;
-        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
+        transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
-    
+
     public void RotateDirectionAndJump(float jumpHeight)
     {
         direction.x *= -1;
         float mainDir = 0.6f * direction.x;
-        this.gameObject.transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
+        transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
         Debug.Log(direction.x.ToString());
         JumpWithForce(jumpHeight);
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!IsPerforming)
+        if (!isPerforming)
         {
             Debug.Log("STUCK");
-            var Entity = collision.gameObject.GetComponent<ObstacleEntity>();
-            if(Entity)
+            var entity = collision.gameObject.GetComponent<ObstacleEntity>();
+            if (entity != null)
             {
-                IsPerforming = true;
-                Entity.PerformObstacleAction(this);
+                isPerforming = true;
+                entity.PerformObstacleAction(this);
             }
         }
     }
-    
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.contacts.Length > 0)
@@ -137,27 +177,25 @@ public class PlatformerController : MonoBehaviour
             if (Vector2.Dot(contact.normal, Vector2.up) > 0.5f)
             {
                 isGrounded = true;
-
             }
         }
 
         if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
         {
-            var Entity = collision.gameObject.GetComponent<ObstacleEntity>();
-            if(Entity)
+            var entity = collision.gameObject.GetComponent<ObstacleEntity>();
+            if (entity != null)
             {
-                IsPerforming = true;
-                Entity.PerformObstacleAction(this);
+                isPerforming = true;
+                entity.PerformObstacleAction(this);
             }
             else
             {
                 if (!isGrounded)
                 {
-                    bCanMove = false;
+                    canMove = false;
                 }
             }
         }
-        
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -175,23 +213,23 @@ public class PlatformerController : MonoBehaviour
 
         if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
         {
-            IsPerforming = false;
+            isPerforming = false;
         }
     }
 
-    void UpdateAnimator()
+    private void UpdateAnimator()
     {
         if (animator != null)
         {
             if (!isGrounded)
             {
-                if (rb != null) rb.excludeLayers = ExcInAir;
-                if (cd != null) cd.excludeLayers = ExcInAir;
+                if (rb != null) rb.excludeLayers = excInAir;
+                if (collider != null) collider.excludeLayers = excInAir;
             }
             else
             {
-                if (rb != null) rb.excludeLayers = ExcOnGround;
-                if (cd != null) cd.excludeLayers = ExcOnGround;
+                if (rb != null) rb.excludeLayers = excOnGround;
+                if (collider != null) collider.excludeLayers = excOnGround;
             }
             animator.SetBool("Jump", !isGrounded); // Set Jump to true if not grounded
             animator.SetBool("IsRunning", isGrounded); // Set Running based on movement

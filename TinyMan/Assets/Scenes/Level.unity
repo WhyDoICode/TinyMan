@@ -286,7 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &66989569
 Transform:
   m_ObjectHideFlags: 0
@@ -612,7 +612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &413141265
 Transform:
   m_ObjectHideFlags: 0
@@ -2671,7 +2671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &542215720
 Transform:
   m_ObjectHideFlags: 0
@@ -2716,7 +2716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &561069527
 Transform:
   m_ObjectHideFlags: 0
@@ -2761,7 +2761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &598282667
 Transform:
   m_ObjectHideFlags: 0
@@ -2888,7 +2888,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1, y: 1}
+  m_SizeDelta: {x: 2.9000285, y: 2.9000301}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &866490713
 MonoBehaviour:
@@ -3335,7 +3335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &1082927105
 Transform:
   m_ObjectHideFlags: 0
@@ -3482,7 +3482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &1166851966
 Transform:
   m_ObjectHideFlags: 0
@@ -3596,7 +3596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &1278626488
 Transform:
   m_ObjectHideFlags: 0
@@ -4133,13 +4133,13 @@ MonoBehaviour:
   - {fileID: 1082927104}
   - {fileID: 561069526}
   - {fileID: 1278626487}
-  charactersToWin: 4
-  respawnDelay: 0.3
+  _charactersToWin: 4
+  _respawnDelay: 0.3
   LoseUI: {fileID: 866490712}
   WinUI: {fileID: 1910049459}
   CharacterCountText: {fileID: 1987777258}
   LimitText: {fileID: 31751223}
-  fadeDuration: 1
+  _fadeDuration: 1
 --- !u!4 &1582039906
 Transform:
   m_ObjectHideFlags: 0
@@ -4260,8 +4260,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87d04f918c747fb499918a572e715799, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationDuration: 0.2
-  scaleUpSize: {x: 0.4, y: 0.4, z: 0.4}
+  _animationDuration: 0.2
+  _scaleUpSize: {x: 1.2, y: 1.2, z: 1.2}
 --- !u!1 &1741945211
 GameObject:
   m_ObjectHideFlags: 0
@@ -6732,10 +6732,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 941166491}
   - {fileID: 1910049459}
   - {fileID: 866490712}
   - {fileID: 2070279284}
-  - {fileID: 941166491}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6958,7 +6958,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1910049459
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6977,7 +6977,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1, y: 1}
+  m_SizeDelta: {x: 2.90003, y: 2.9000285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1910049460
 MonoBehaviour:
@@ -7270,7 +7270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c61036d3bf23294eac4ec3c56485fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
+  spawnItemPrefab: {fileID: 3981577693627269131, guid: 8096f4f487e24d645a6041bc17fce279, type: 3}
 --- !u!4 &2008790339
 Transform:
   m_ObjectHideFlags: 0

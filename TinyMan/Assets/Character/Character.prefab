@@ -170,7 +170,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.3
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -197,27 +197,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cd93001b52a27b42a30512fbcf9099b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  jumpForce: 10
-  maxJumpHeight: 4
-  minJumpHeight: 1
-  detectionRange: 2
-  canMove: 1
-  direction: {x: 1, y: 0}
-  groundLayer:
+  _moveSpeed: 5
+  _jumpForce: 10
+  _maxJumpHeight: 4
+  _minJumpHeight: 1
+  _detectionRange: 2
+  _canMove: 1
+  _direction: {x: 1, y: 0}
+  _groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  excOnGround:
-    serializedVersion: 2
-    m_Bits: 0
-  excInAir:
-    serializedVersion: 2
-    m_Bits: 0
-  groundCheckDistance: 0.5
-  groundCheckWidth: 0.01
-  rb: {fileID: 6133270726715980225}
-  collider: {fileID: 8061064600696783174}
-  animator: {fileID: 7978692047456479013}
+  _groundCheckDistance: 0.25
+  _groundCheckWidth: 0.01
+  _rb: {fileID: 6133270726715980225}
+  _collider: {fileID: 8061064600696783174}
+  _animator: {fileID: 7978692047456479013}
 --- !u!70 &8061064600696783174
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -250,6 +244,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.11, y: 0.91}
+  m_Offset: {x: 0, y: -0.24}
+  m_Size: {x: 0.12, y: 0.49}
   m_Direction: 0

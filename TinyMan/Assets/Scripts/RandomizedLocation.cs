@@ -23,7 +23,6 @@ public class RandomizedLocation : MonoBehaviour
 
     private void RandomizePosition()
     {
-        // Generate random X and Y positions within the specified ranges
         float randomX = Random.Range(minX, maxX);
         float randomY = Random.Range(minY, maxY);
 

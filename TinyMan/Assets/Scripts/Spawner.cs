@@ -1,25 +1,24 @@
-using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Spawner : MonoBehaviour
 {
-    public GameObject SpawnItemPrefab; 
-    private Transform SpawnLocation; 
-
-    private GameObject CurrentSpawnedItem { get; set; }
+    public GameObject spawnItemPrefab;
+    private Transform _spawnLocation;
+    private GameObject _currentSpawnedItem;
 
     private void Awake()
     {
-        SpawnLocation = transform;
+        _spawnLocation = transform;
     }
 
     public void CreateEntity()
     {
         DestroyCurrentItem();
 
-        if (SpawnItemPrefab != null && SpawnLocation != null)
+        if (spawnItemPrefab != null && _spawnLocation != null)
         {
-            CurrentSpawnedItem = Instantiate(SpawnItemPrefab, SpawnLocation.position, SpawnLocation.rotation);
+            _currentSpawnedItem = Instantiate(spawnItemPrefab, _spawnLocation.position, _spawnLocation.rotation);
         }
         else
         {
@@ -29,7 +28,7 @@ public class Spawner : MonoBehaviour
 
     private void DestroyCurrentItem()
     {
-        if (!CurrentSpawnedItem) return;
-        Destroy(CurrentSpawnedItem);
+        if (_currentSpawnedItem == null) return;
+        Destroy(_currentSpawnedItem);
     }
 }

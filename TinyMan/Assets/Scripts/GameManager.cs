@@ -13,28 +13,19 @@ public class GameManager : MonoBehaviour
         Lost
     }
 
-    // Game State Management
     public GameState CurrentState { get; private set; } = GameState.Playing;
-
-    // Spawner Management
     [Header("Spawner Management")]
     public Spawner[] Spawners;
-
-    // Character Management
     [Header("Character Management")]
-    private int maxCharacters = 9;
-
+    private int _maxCharacters = 9;
     [SerializeField, Range(1, 20)]
-    private int charactersToWin = 4;
-
+    private int _charactersToWin = 4;
     [SerializeField, Range(0.1f, 5f)]
-    private float respawnDelay = 0.3f;
+    private float _respawnDelay = 0.3f;
+    private int _totalCharacters;
+    private int _limitToWin;
+    private int _charactersInWinVolume = 0;
 
-    private int totalCharacters;
-    private int limitToWin;
-    private int charactersInWinVolume = 0; // Characters currently in the win volume
-
-    // UI Elements
     [Header("UI Elements")]
     public RectTransform LoseUI;
     public RectTransform WinUI;
@@ -42,28 +33,26 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI LimitText;
 
     [SerializeField, Range(0.1f, 5f)]
-    private float fadeDuration = 1f;
+    private float _fadeDuration = 1f;
 
-
-    private bool isRespawning = false;
-    private bool isRestarting = false;
+    private bool _isRespawning = false;
+    private bool _isRestarting = false;
 
     private void Awake()
     {
         ImplementSingletonPattern();
-
         InitializeValues();
     }
 
-    void InitializeValues()
+    private void InitializeValues()
     {
-        totalCharacters = maxCharacters;
-        limitToWin = charactersToWin;
+        _totalCharacters = _maxCharacters;
+        _limitToWin = _charactersToWin;
     }
 
     private void Start()
     {
-        maxCharacters = Spawners.Length;
+        _maxCharacters = Spawners.Length;
         InitializeUI();
         RespawnCharacters();
     }
@@ -92,7 +81,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeUI()
     {
-        LimitText.text = limitToWin.ToString();
+        LimitText.text = _limitToWin.ToString();
         UpdateCharacterCountText();
         SetAlpha(LoseUI, 0f);
         WinUI.gameObject.SetActive(false);
@@ -108,7 +97,7 @@ public class GameManager : MonoBehaviour
 
     private void CheckWinCondition()
     {
-        if (charactersInWinVolume >= limitToWin)
+        if (_charactersInWinVolume >= _limitToWin)
         {
             TriggerWin();
         }
@@ -116,9 +105,9 @@ public class GameManager : MonoBehaviour
 
     private void RespawnCharacters()
     {
-        if (isRespawning) return;
+        if (_isRespawning) return;
 
-        isRespawning = true;
+        _isRespawning = true;
         InitializeValues();
         UpdateCharacterCountText();
         foreach (Spawner spawner in Spawners)
@@ -126,24 +115,24 @@ public class GameManager : MonoBehaviour
             spawner?.CreateEntity();
         }
 
-        StartCoroutine(EndRespawn(respawnDelay));
+        StartCoroutine(EndRespawn(_respawnDelay));
     }
 
     private IEnumerator EndRespawn(float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        isRespawning = false;
+        _isRespawning = false;
     }
 
     public void ReduceCharacterCount()
     {
-        if (isRespawning) return;
+        if (_isRespawning) return;
         
-        totalCharacters--;
+        _totalCharacters--;
         UpdateCharacterCountText();
 
-        if (totalCharacters < limitToWin)
+        if (_totalCharacters < _limitToWin)
         {
             RespawnCharacters();
         }
@@ -153,7 +142,7 @@ public class GameManager : MonoBehaviour
     {
         if (CharacterCountText != null)
         {
-            CharacterCountText.text = totalCharacters.ToString();
+            CharacterCountText.text = _totalCharacters.ToString();
         }
     }
 
@@ -177,19 +166,18 @@ public class GameManager : MonoBehaviour
         RestartGame();
     }
 
-    public void IncrementWinCount() { charactersInWinVolume ++; }
+    public void IncrementWinCount() { _charactersInWinVolume++; }
     
     
     private void RestartGame()
     {
-        if (isRestarting) return;
+        if (_isRestarting) return;
 
-        isRestarting = true;
+        _isRestarting = true;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         CurrentState = GameState.Playing;
     }
 
-    // Helper method to set alpha of a RectTransform using CanvasRenderer
     private void SetAlpha(RectTransform rectTransform, float alpha)
     {
         if (rectTransform.TryGetComponent(out CanvasRenderer canvasRenderer))

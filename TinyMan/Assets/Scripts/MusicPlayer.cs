@@ -3,36 +3,34 @@ using UnityEngine;
 public class MusicPlayer : MonoBehaviour
 {
     public static MusicPlayer Instance { get; private set; }
-
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scene loads
-            audioSource = GetComponent<AudioSource>();
-            if (audioSource != null)
+            DontDestroyOnLoad(gameObject);
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource != null)
             {
-                audioSource.loop = true; // Loop music
-                audioSource.Play(); // Start playing music
+                _audioSource.loop = true;
+                _audioSource.Play();
             }
         }
         else
         {
-            Destroy(gameObject); // Destroy any duplicate instances
+            Destroy(gameObject);
         }
     }
 
-    // Method to change the music clip
     public void ChangeMusic(AudioClip newClip)
     {
-        if (audioSource != null && newClip != null)
+        if (_audioSource != null && newClip != null)
         {
-            audioSource.Stop();
-            audioSource.clip = newClip;
-            audioSource.Play();
+            _audioSource.Stop();
+            _audioSource.clip = newClip;
+            _audioSource.Play();
         }
     }
 }

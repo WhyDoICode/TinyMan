@@ -3,26 +3,22 @@ using UnityEngine;
 
 public class ObstacleController : MonoBehaviour
 {
-    // Animation Settings
     [Header("Animation Settings")]
     [SerializeField, Range(0.1f, 1f)]
-    private float animationDuration = 0.2f;
-
+    private float _animationDuration = 0.2f;
     [SerializeField]
-    private Vector3 scaleUpSize = new Vector3(1.2f, 1.2f, 1.2f);
+    private Vector3 _scaleUpSize = new Vector3(1.2f, 1.2f, 1.2f);
 
-    // Interaction
-    private Vector3 offset;
-    private GameObject selectedSprite;
+    private Vector3 _offset;
+    private GameObject _selectedSprite;
 
-    // Properties
-    public float AnimationDuration => animationDuration;
-    public Vector3 ScaleUpSize => scaleUpSize;
+    public float AnimationDuration => _animationDuration;
+    public Vector3 ScaleUpSize => _scaleUpSize;
 
     private void Update()
     {
         HandleMouseInput();
-        if (selectedSprite != null)
+        if (_selectedSprite != null)
         {
             MoveSelectedSprite();
         }
@@ -48,43 +44,41 @@ public class ObstacleController : MonoBehaviour
 
         if (hit.collider != null && hit.collider.gameObject.CompareTag("Obstacle"))
         {
-            selectedSprite = hit.collider.gameObject;
-            offset = selectedSprite.transform.position - mousePosition;
+            _selectedSprite = hit.collider.gameObject;
+            _offset = _selectedSprite.transform.position - mousePosition;
 
-            StartCoroutine(ScaleAnimation(selectedSprite));
+            StartCoroutine(ScaleAnimation(_selectedSprite));
         }
     }
 
     private void DeselectSprite()
     {
-        selectedSprite = null;
+        _selectedSprite = null;
     }
 
     private void MoveSelectedSprite()
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        selectedSprite.transform.position = mousePosition + offset;
+        _selectedSprite.transform.position = mousePosition + _offset;
     }
 
     private IEnumerator ScaleAnimation(GameObject target)
     {
         Vector3 originalScale = target.transform.localScale;
 
-        // Scale up
         float elapsedTime = 0f;
-        while (elapsedTime < animationDuration / 2)
+        while (elapsedTime < _animationDuration / 2)
         {
-            target.transform.localScale = Vector3.Lerp(originalScale, scaleUpSize, elapsedTime / (animationDuration / 2));
+            target.transform.localScale = Vector3.Lerp(originalScale, _scaleUpSize, elapsedTime / (_animationDuration / 2));
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-        target.transform.localScale = scaleUpSize;
+        target.transform.localScale = _scaleUpSize;
 
-        // Scale down
         elapsedTime = 0f;
-        while (elapsedTime < animationDuration / 2)
+        while (elapsedTime < _animationDuration / 2)
         {
-            target.transform.localScale = Vector3.Lerp(scaleUpSize, originalScale, elapsedTime / (animationDuration / 2));
+            target.transform.localScale = Vector3.Lerp(_scaleUpSize, originalScale, elapsedTime / (_animationDuration / 2));
             elapsedTime += Time.deltaTime;
             yield return null;
         }

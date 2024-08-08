@@ -1,82 +1,58 @@
-using System;
 using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
 {
-    // Movement Settings
     [Header("Movement Settings")]
     [SerializeField, Range(1f, 10f)]
-    private float moveSpeed = 5f;
-
+    private float _moveSpeed = 5f;
     [SerializeField, Range(1f, 20f)]
-    private float jumpForce = 10f;
-
+    private float _jumpForce = 10f;
     [SerializeField, Range(1f, 10f)]
-    private float maxJumpHeight = 4f;
-
+    private float _maxJumpHeight = 4f;
     [SerializeField, Range(0.5f, 5f)]
-    private float minJumpHeight = 1f;
-
+    private float _minJumpHeight = 1f;
     [SerializeField, Range(0.1f, 5f)]
-    private float detectionRange = 2f;
+    private float _detectionRange = 2f;
 
-    // Character State
     [Header("Character State")]
     [SerializeField]
-    private bool canMove = true;
+    private bool _canMove = true;
 
-    private bool characterInFront = false;
-    private bool isGrounded;
-    private bool isPerforming = false;
+    private bool _characterInFront = false;
+    private bool _isGrounded;
+    private bool _isPerforming = false;
 
-    // Direction
     [Header("Direction")]
     [SerializeField]
-    private Vector2 direction;
+    private Vector2 _direction;
 
-    // Layer Masks
     [Header("Layer Masks")]
     [SerializeField]
-    private LayerMask groundLayer;
+    private LayerMask _groundLayer;
 
-    [SerializeField]
-    private LayerMask excOnGround;
-
-    [SerializeField]
-    private LayerMask excInAir;
-
-    // Ground Detection
     [Header("Ground Detection")]
     [SerializeField, Range(0.1f, 0.5f)]
-    private float groundCheckDistance = 0.1f;
-
+    private float _groundCheckDistance = 0.1f;
     [SerializeField, Range(0.01f, 0.5f)]
-    private float groundCheckWidth = 0.01f;
+    private float _groundCheckWidth = 0.01f;
 
-    // Components
     [SerializeField]
-    private Rigidbody2D rb;
+    private Rigidbody2D _rb;
     [SerializeField]
-    private Collider2D collider;
+    private Collider2D _collider;
     [SerializeField]
-    private Animator animator;
+    private Animator _animator;
 
-    // Properties
-    public float MoveSpeed => moveSpeed;
-    public float JumpForce => jumpForce;
-    public float MaxJumpHeight => maxJumpHeight;
-    public float MinJumpHeight => minJumpHeight;
-    public float DetectionRange => detectionRange;
-    public bool CanMove => canMove;
-    public bool CharacterInFront => characterInFront;
-    public bool IsGrounded => isGrounded;
-    public Vector2 Direction => direction;
-    public bool IsPerforming => isPerforming;
-
-    private void Awake()
-    {
-
-    }
+    public float MoveSpeed => _moveSpeed;
+    public float JumpForce => _jumpForce;
+    public float MaxJumpHeight => _maxJumpHeight;
+    public float MinJumpHeight => _minJumpHeight;
+    public float DetectionRange => _detectionRange;
+    public bool CanMove => _canMove;
+    public bool CharacterInFront => _characterInFront;
+    public bool IsGrounded => _isGrounded;
+    public Vector2 Direction => _direction;
+    public bool IsPerforming => _isPerforming;
 
     private void Update()
     {
@@ -85,32 +61,30 @@ public class PlatformerController : MonoBehaviour
         UpdateAnimator();
         CheckGround();
 
-        if (canMove) Move();
+        if (_canMove) Move();
     }
 
     private void CheckGround()
     {
-        // Cast a short ray downwards from the center of the collider to detect ground
-        Vector2 origin = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y);
-        RaycastHit2D hitCenter = Physics2D.Raycast(origin, Vector2.down, groundCheckDistance, groundLayer);
+        Vector2 origin = (Vector2)transform.position + Vector2.down * (_collider.bounds.extents.y);
+        RaycastHit2D hitCenter = Physics2D.Raycast(origin, Vector2.down, _groundCheckDistance, _groundLayer);
 
-        // Cast two additional rays at the left and right edges of the collider
-        Vector2 leftOrigin = origin + Vector2.left * (collider.bounds.extents.x - groundCheckWidth);
-        Vector2 rightOrigin = origin + Vector2.right * (collider.bounds.extents.x - groundCheckWidth);
+        Vector2 leftOrigin = origin + Vector2.left * (_collider.bounds.extents.x - _groundCheckWidth);
+        Vector2 rightOrigin = origin + Vector2.right * (_collider.bounds.extents.x - _groundCheckWidth);
 
-        RaycastHit2D hitLeft = Physics2D.Raycast(leftOrigin, Vector2.down, groundCheckDistance, groundLayer);
-        RaycastHit2D hitRight = Physics2D.Raycast(rightOrigin, Vector2.down, groundCheckDistance, groundLayer);
+        RaycastHit2D hitLeft = Physics2D.Raycast(leftOrigin, Vector2.down, _groundCheckDistance, _groundLayer);
+        RaycastHit2D hitRight = Physics2D.Raycast(rightOrigin, Vector2.down, _groundCheckDistance, _groundLayer);
 
-        isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
+        _isGrounded = hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
 
-        if (isGrounded)
+        if (_isGrounded)
         {
-            canMove = true;
+            _canMove = true;
         }
 
-        Debug.DrawRay(origin, Vector2.down * groundCheckDistance, Color.red);
-        Debug.DrawRay(leftOrigin, Vector2.down * groundCheckDistance, Color.red);
-        Debug.DrawRay(rightOrigin, Vector2.down * groundCheckDistance, Color.red);
+        Debug.DrawRay(origin, Vector2.down * _groundCheckDistance, Color.red);
+        Debug.DrawRay(leftOrigin, Vector2.down * _groundCheckDistance, Color.red);
+        Debug.DrawRay(rightOrigin, Vector2.down * _groundCheckDistance, Color.red);
     }
 
     private void OnDestroy()
@@ -123,18 +97,17 @@ public class PlatformerController : MonoBehaviour
 
     private void LookAhead()
     {
-        // Raycast in the direction the character is facing
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, detectionRange);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, _direction, _detectionRange);
 
         if (hit.collider != null && !hit.collider.gameObject.CompareTag("Obstacle") && !hit.collider.gameObject.CompareTag("Kill"))
         {
-            canMove = false;
-            characterInFront = true;
+            _canMove = false;
+            _characterInFront = true;
         }
         else
         {
-            canMove = true;
-            characterInFront = false;
+            _canMove = true;
+            _characterInFront = false;
         }
     }
 
@@ -145,42 +118,42 @@ public class PlatformerController : MonoBehaviour
 
     private void Move()
     {
-        rb.velocity = new Vector2(direction.x * moveSpeed, rb.velocity.y);
+        _rb.velocity = new Vector2(_direction.x * _moveSpeed, _rb.velocity.y);
     }
 
     private void Jump()
     {
-            float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * maxJumpHeight);
-            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-            isGrounded = false;
-            animator.SetTrigger("JumpTrig");
+        float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * _maxJumpHeight);
+        _rb.velocity = new Vector2(_rb.velocity.x, jumpVelocity);
+        _isGrounded = false;
+        _animator.SetTrigger("JumpTrig");
     }
 
     public void JumpWithForce(float jumpHeight)
     {
-            float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
-            rb.velocity = new Vector2(rb.velocity.x, jumpVelocity);
-            isGrounded = false;
-            animator.SetTrigger("JumpTrig");
+        float jumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(Physics2D.gravity.y) * jumpHeight);
+        _rb.velocity = new Vector2(_rb.velocity.x, jumpVelocity);
+        _isGrounded = false;
+        _animator.SetTrigger("JumpTrig");
     }
 
     public void Stop()
     {
-        rb.velocity = new Vector2(0, rb.velocity.y);
-        direction = Vector2.zero;
+        _rb.velocity = new Vector2(0, _rb.velocity.y);
+        _direction = Vector2.zero;
     }
 
     public void ChangeDirection(Vector2 newDirection)
     {
-        direction = newDirection;
-        float mainDir = 0.6f * direction.x;
+        _direction = newDirection;
+        float mainDir = 0.6f * _direction.x;
         transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
 
     public void RotateDirection()
     {
-        direction.x *= -1;
-        float mainDir = 0.6f * direction.x;
+        _direction.x *= -1;
+        float mainDir = 0.6f * _direction.x;
         transform.localScale = new Vector3(mainDir, 0.6f, 0.6f);
     }
 
@@ -192,12 +165,12 @@ public class PlatformerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (!isPerforming)
+        if (!_isPerforming)
         {
             var entity = collision.gameObject.GetComponent<ObstacleEntity>();
             if (entity != null)
             {
-                isPerforming = true;
+                _isPerforming = true;
                 entity.PerformObstacleAction(this);
             }
         }
@@ -210,14 +183,14 @@ public class PlatformerController : MonoBehaviour
             var entity = collision.gameObject.GetComponent<ObstacleEntity>();
             if (entity != null)
             {
-                isPerforming = true;
+                _isPerforming = true;
                 entity.PerformObstacleAction(this);
             }
             else
             {
-                if (!isGrounded)
+                if (!_isGrounded)
                 {
-                    canMove = false;
+                    _canMove = false;
                 }
             }
         }
@@ -227,16 +200,16 @@ public class PlatformerController : MonoBehaviour
     {
         if (collision.gameObject != null && collision.gameObject.CompareTag("Obstacle"))
         {
-            isPerforming = false;
+            _isPerforming = false;
         }
     }
 
     private void UpdateAnimator()
     {
-        if (animator != null)
+        if (_animator != null)
         {
-            animator.SetBool("Jump", !isGrounded); // Set Jump to true if not grounded
-            animator.SetBool("IsRunning", isGrounded); // Set Running based on movement
+            _animator.SetBool("Jump", !_isGrounded);
+            _animator.SetBool("IsRunning", _isGrounded);
         }
     }
 }

@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 599845721}
   - component: {fileID: 599845720}
   m_Layer: 0
-  m_Name: Screenshot 2024-08-01 122302
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
